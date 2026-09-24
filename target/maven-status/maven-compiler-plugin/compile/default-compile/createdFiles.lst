@@ -1,0 +1,6 @@
+Model\Pasta.class
+Controller\AnotacaoCtrl.class
+Model\Tag.class
+Model\Anotacao.class
+Model\Artigo.class
+com\mycompany\agoraproject\AgoraProject.class

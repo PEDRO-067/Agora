@@ -12,10 +12,22 @@ import java.time.LocalDate;
  */
 public class Anotacao {
     private int id;
+    private String nome;
     private String texto;
     private LocalDate dataCriacao;
-    private LocalDate daataEdicao;
+    private LocalDate dataEdicao;
 
+    public Anotacao(){
+        
+    }
+    
+    public Anotacao(String texto, LocalDate dataCriacao) {
+        this.texto = texto;
+        this.dataCriacao = dataCriacao;
+    }
+    
+    
+    
     public int getId() {
         return id;
     }
@@ -29,7 +41,7 @@ public class Anotacao {
     }
 
     public LocalDate getDaataEdicao() {
-        return daataEdicao;
+        return dataEdicao;
     }
 
     public void setId(int id) {
@@ -44,8 +56,8 @@ public class Anotacao {
         this.dataCriacao = dataCriacao;
     }
 
-    public void setDaataEdicao(LocalDate daataEdicao) {
-        this.daataEdicao = daataEdicao;
+    public void setDataEdicao(LocalDate dataEdicao) {
+        this.dataEdicao = dataEdicao;
     }
    
 }
