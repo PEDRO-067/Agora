@@ -4,6 +4,7 @@
  */
 package Controller;
 
+import DAO.AnotacaoDAO;
 import Model.Anotacao;
 import java.time.LocalDate;
 
@@ -13,27 +14,32 @@ import java.time.LocalDate;
  */
 public class AnotacaoCtrl {
     
-    public Anotacao cadastrarAnotacao(String texto){
+    public Anotacao cadastrarAnotacao(String nome, String texto){
         // Anotacao vai de 1 para 1
         
         LocalDate dataCriacao = LocalDate.now();
         LocalDate dataEdicao = null;
         Anotacao anotacao = new Anotacao(texto, dataCriacao);
-        // Chama função DAO para salvar no banco ...
+        AnotacaoDAO anotacaoDAO = new AnotacaoDAO();
+        
+        anotacaoDAO.cadastrarAnotacao(anotacao);
+        
         return anotacao;
     }
     
     public void editarAnotacao(Anotacao anotacao, String texto){
         LocalDate dataEdicao = LocalDate.now();
         anotacao.setTexto(texto);
- 
-        // chama função DAO para atualizar no banco
+        AnotacaoDAO anotacaoDAO = new AnotacaoDAO();
         
+        anotacaoDAO.atualizarAnotacao(anotacao);
     }
     
     public void excluirAnotacao(Anotacao anotacao){
         int idAnotacao = anotacao.getId();
-        // chama função dao que recebe id e apaga a anotação correspondente
+        AnotacaoDAO anotacaoDAO = new AnotacaoDAO();
+        
+        anotacaoDAO.excluirAnotacao(idAnotacao);
     }
     
     
