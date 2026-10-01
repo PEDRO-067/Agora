@@ -1,3 +1,5 @@
+package Service;
+
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -18,8 +20,10 @@ public class ConexaoBD {
         
     }
     
+    /*
     public static Connection solicitarConexao() throws SQLException {
         
     }
+    */
     
 }

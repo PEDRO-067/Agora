@@ -9,18 +9,19 @@ import Model.Anotacao;
 import java.time.LocalDate;
 
 /**
- *
  * @author pedro
  */
 public class AnotacaoCtrl {
     
+    private AnotacaoDAO anotacaoDAO;
+
+    public AnotacaoCtrl() {
+        this.anotacaoDAO = new AnotacaoDAO();
+    }
+    
     public Anotacao cadastrarAnotacao(String nome, String texto){
-        // Anotacao vai de 1 para 1
-        
         LocalDate dataCriacao = LocalDate.now();
-        LocalDate dataEdicao = null;
         Anotacao anotacao = new Anotacao(texto, dataCriacao);
-        AnotacaoDAO anotacaoDAO = new AnotacaoDAO();
         
         anotacaoDAO.cadastrarAnotacao(anotacao);
         
@@ -30,17 +31,13 @@ public class AnotacaoCtrl {
     public void editarAnotacao(Anotacao anotacao, String texto){
         LocalDate dataEdicao = LocalDate.now();
         anotacao.setTexto(texto);
-        AnotacaoDAO anotacaoDAO = new AnotacaoDAO();
+        anotacao.setDataEdicao(dataEdicao); 
         
         anotacaoDAO.atualizarAnotacao(anotacao);
     }
     
     public void excluirAnotacao(Anotacao anotacao){
         int idAnotacao = anotacao.getId();
-        AnotacaoDAO anotacaoDAO = new AnotacaoDAO();
-        
         anotacaoDAO.excluirAnotacao(idAnotacao);
     }
-    
-    
-} 
+}
