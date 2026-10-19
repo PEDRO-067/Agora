@@ -4,10 +4,15 @@
  */
 package Model;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  *
  * 
  */
+@Getter
+@Setter
 public class Tag {
     private int id;
     private String nome;
@@ -17,24 +22,6 @@ public class Tag {
         this.nome = nome;
     }
     
-                
-    
-
-    public int getId() {
-        return id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-    
+             
     
 }

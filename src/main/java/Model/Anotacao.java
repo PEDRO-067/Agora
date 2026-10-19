@@ -5,11 +5,14 @@
 package Model;
 
 import java.time.LocalDate;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- *
- * 
+ * Representa uma anotação associada a um artigo.
  */
+@Getter
+@Setter
 public class Anotacao {
     private int id;
     private String nome;
@@ -17,48 +20,52 @@ public class Anotacao {
     private LocalDate dataCriacao;
     private LocalDate dataEdicao;
 
-    public Anotacao(){
-        
+    // Permite reconstruir uma anotação a partir dos dados do banco.
+    public Anotacao() {
     }
-    
+
+    // Cria uma anotação com texto e data de criação.
     public Anotacao(String texto, LocalDate dataCriacao) {
+        validarTexto(texto);
+
+        if (dataCriacao == null) {
+            throw new IllegalArgumentException(
+                "A data de criação deve ser informada."
+            );
+        }
+
         this.texto = texto;
         this.dataCriacao = dataCriacao;
     }
-    
-    
-    
-    public int getId() {
-        return id;
+
+    // Cria uma anotação com nome e texto, usando a data atual.
+    public Anotacao(String nome, String texto) {
+        this(texto, LocalDate.now());
+        this.nome = nome;
     }
 
-    public String getTexto() {
-        return texto;
+    //Altera o texto e registra a data da edição.
+    public void editarTexto(String novoTexto) {
+        validarTexto(novoTexto);
+
+        this.texto = novoTexto;
+        this.dataEdicao = LocalDate.now();
     }
 
-    public LocalDate getDataCriacao() {
-        return dataCriacao;
+    //Valida o texto
+    private void validarTexto(String texto) {
+        if (texto == null || texto.isBlank()) {
+            throw new IllegalArgumentException(
+                "O texto da anotação não pode estar vazio."
+            );
+        }
     }
 
-    public LocalDate getDaataEdicao() {
-        return dataEdicao;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
+    //Define o texto com validação sem registrar uma edição.
     public void setTexto(String texto) {
+        validarTexto(texto);
         this.texto = texto;
     }
 
-    public void setDataCriacao(LocalDate dataCriacao) {
-        this.dataCriacao = dataCriacao;
-    }
-
-    public void setDataEdicao(LocalDate dataEdicao) {
-        this.dataEdicao = dataEdicao;
-    }
-   
 }
 
