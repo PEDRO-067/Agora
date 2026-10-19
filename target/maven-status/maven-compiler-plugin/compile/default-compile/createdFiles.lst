@@ -1,8 +1,10 @@
+Service\CrossrefService.class
 View\Launcher.class
 View\ModalDetalhesArtigo.class
 View\PainelConteudo.class
 Model\Tag.class
 View\CartaoArtigo.class
+Service\CrossrefParser.class
 View\TemaUI.class
 View\TelaPrincipal.class
 Model\Anotacao.class

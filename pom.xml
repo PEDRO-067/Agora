@@ -8,11 +8,17 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>24</maven.compiler.release>
-        <exec.mainClass>View.Launcher</exec.mainClass>
+        <exec.mainClass>com.mycompany.agoraproject.AgoraProject</exec.mainClass>
         <javafx.version>22</javafx.version>
     </properties>
 
     <dependencies>
+        <!-- Leitura dos metadados JSON recebidos do Crossref -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.14.0</version>
+        </dependency>
         <!-- JavaFX -->
         <dependency>
             <groupId>org.openjfx</groupId>
