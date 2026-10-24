@@ -24,17 +24,32 @@ public class Artigo {
     private String titulo;
     private List<String> autores = new ArrayList<>();
     private int ano;
+
+    // Tipo informado pelo Crossref: journal-article ou proceedings-article. 
     private String tipoPublicacao;
+
+    // Nome da revista ou título dos anais em que o trabalho foi publicado.
     private String veiculo;
     private String volume;
+
+    // Número da edição da revista (issue)
     private String numero;
+
+    // Identificador do artigo (article-number), como "e4150"
+    private String numeroArtigo;
+
     private String editora;
+
+    // Organização responsável pelo congresso
     private String organizacao;
+
+    // Local de realização do congresso
     private String endereco;
+
+    // Páginas ou intervalo de páginas, como "1-10"
     private String paginas;
     private int mes;
     private String resumo;
-    private List<String> palavrasChave = new ArrayList<>();
     private String url;
     private String statusLeitura = NAO_LIDO;
 
@@ -61,7 +76,7 @@ public class Artigo {
         if (ano < 0) {
             throw new IllegalArgumentException("O ano não pode ser negativo.");
         }
-
+        
         this.ano = ano;
     }
 
@@ -98,15 +113,7 @@ public class Artigo {
         this.autores = copiarListaValidada(autores, "autores");
     }
 
-    // Retorna uma cópia que não permite adicionar ou remover palavras-chave.
-    public List<String> getPalavrasChave() {
-        return List.copyOf(palavrasChave);
-    }
-
-    public void setPalavrasChave(List<String> palavrasChave) {
-        this.palavrasChave = copiarListaValidada(palavrasChave, "palavras-chave");
-    }
-
+    
     // Dados ausentes viram uma lista vazia; os elementos informados são validados.
     private List<String> copiarListaValidada(List<String> itens, String campo) {
         if (itens == null) {
