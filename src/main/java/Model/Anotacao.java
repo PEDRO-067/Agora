@@ -7,65 +7,52 @@ package Model;
 import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.AllArgsConstructor;
 
 /**
  * Representa uma anotação associada a um artigo.
  */
+
 @Getter
-@Setter
+@AllArgsConstructor
 public class Anotacao {
+    
+    @Setter
     private int id;
+    
+    @Setter
     private String nome;
+    
     private String texto;
     private LocalDate dataCriacao;
     private LocalDate dataEdicao;
 
-    // Permite reconstruir uma anotação a partir dos dados do banco.
-    public Anotacao() {
-    }
-
-    // Cria uma anotação com texto e data de criação.
-    public Anotacao(String texto, LocalDate dataCriacao) {
-        validarTexto(texto);
-
-        if (dataCriacao == null) {
-            throw new IllegalArgumentException(
-                "A data de criação deve ser informada."
-            );
-        }
-
-        this.texto = texto;
-        this.dataCriacao = dataCriacao;
-    }
+    // A anotação a partir dos dados registrados no banco pode ser instanciada 
+    // usando o contrutor com todos os argumentos do lombok. 
 
     // Cria uma anotação com nome e texto, usando a data atual.
     public Anotacao(String nome, String texto) {
-        this(texto, LocalDate.now());
-        this.nome = nome;
+        this.nome = nome.trim();
+        setTexto(texto.trim());
+        this.dataCriacao = LocalDate.now();
     }
 
     //Altera o texto e registra a data da edição.
     public void editarTexto(String novoTexto) {
-        validarTexto(novoTexto);
-
-        this.texto = novoTexto;
+        setTexto(novoTexto.trim());
         this.dataEdicao = LocalDate.now();
     }
 
-    //Valida o texto
-    private void validarTexto(String texto) {
+    // Valida o texto e atribui valor a texto.
+    private void setTexto(String texto) {
         if (texto == null || texto.isBlank()) {
             throw new IllegalArgumentException(
                 "O texto da anotação não pode estar vazio."
             );
         }
-    }
-
-    //Define o texto com validação sem registrar uma edição.
-    public void setTexto(String texto) {
-        validarTexto(texto);
+        
         this.texto = texto;
     }
-
+    
 }
 

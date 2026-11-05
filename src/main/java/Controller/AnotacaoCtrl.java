@@ -6,6 +6,7 @@ package Controller;
 
 import DAO.AnotacaoDAO;
 import Model.Anotacao;
+import java.sql.SQLException;
 import java.time.LocalDate;
 
 /**
@@ -19,25 +20,22 @@ public class AnotacaoCtrl {
         this.anotacaoDAO = new AnotacaoDAO();
     }
     
-    public Anotacao cadastrarAnotacao(String nome, String texto){
-        LocalDate dataCriacao = LocalDate.now();
-        Anotacao anotacao = new Anotacao(texto, dataCriacao);
-        
+    public void cadastrarAnotacao(String nome, String texto) throws SQLException {
+        Anotacao anotacao = new Anotacao(nome, texto);
         anotacaoDAO.cadastrarAnotacao(anotacao);
-        
-        return anotacao;
     }
     
-    public void editarAnotacao(Anotacao anotacao, String texto){
-        LocalDate dataEdicao = LocalDate.now();
-        anotacao.setTexto(texto);
-        anotacao.setDataEdicao(dataEdicao); 
-        
+    public void editarAnotacao(Anotacao anotacao, String texto) throws SQLException {
+        anotacao.editarTexto(texto);
         anotacaoDAO.atualizarAnotacao(anotacao);
     }
     
-    public void excluirAnotacao(Anotacao anotacao){
+    public void excluirAnotacao(Anotacao anotacao) throws SQLException {
         int idAnotacao = anotacao.getId();
         anotacaoDAO.excluirAnotacao(idAnotacao);
+    }
+    
+    public void lerAnotacao() throws SQLException {
+        
     }
 }

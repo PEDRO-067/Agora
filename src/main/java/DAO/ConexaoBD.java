@@ -1,6 +1,7 @@
-package Service;
+package DAO;
 
 
+import Service.Configuracao;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -17,13 +18,13 @@ import java.sql.SQLException;
 public class ConexaoBD {
     
     private ConexaoBD() {
-        
     }
     
-    /*
-    public static Connection solicitarConexao() throws SQLException {
-        
+    public static Connection getConexao() throws SQLException {
+        String url = Configuracao.get("db.url", "jdbc:postgresql://localhost:5432/");
+        String usuario = Configuracao.get("db.user", "postgres");
+        String senha = Configuracao.get("db.password", "postgres");
+        return DriverManager.getConnection(url, usuario, senha);
     }
-    */
     
 }

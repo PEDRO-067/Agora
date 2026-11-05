@@ -12,10 +12,13 @@ import lombok.Setter;
 /**
  * Representa uma pasta que organiza artigos cadastrados.
  */
+
 @Getter
-@Setter
 public class Pasta {
+    
+    @Setter
     private int id;
+    
     private String nome;
     private final List<Artigo> artigos = new ArrayList<>();
 

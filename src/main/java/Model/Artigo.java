@@ -8,12 +8,16 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AccessLevel;
 
 /**
  * Representa um artigo e seus dados bibliográficos obtidos pelo DOI.
  */
+
 @Getter
 @Setter
+@NoArgsConstructor
 public class Artigo {
     public static final String NAO_LIDO = "Não lido";
     public static final String EM_LEITURA = "Em leitura";
@@ -52,10 +56,16 @@ public class Artigo {
     private String resumo;
     private String url;
     private String statusLeitura = NAO_LIDO;
+    
+    // Associar uma anotacao a um artigo. AccessLevel.NONE impede que seja 
+    // gerado um setter para anotacao
+    @Setter(AccessLevel.NONE)
+    private Anotacao anotacao;
+    
+    private final List<Tag> tags = new ArrayList<>();
 
-    // Permite montar o artigo com os dados recebidos do serviço ou do banco.
-    public Artigo() {
-    }
+    // O artigo com os dados recebidos do serviço ou do banco é montado com o 
+    // construtor NoArgsConstructor.
 
     // Inicia um artigo pelo DOI, antes do preenchimento dos metadados.
     public Artigo(String doi) {
@@ -106,7 +116,7 @@ public class Artigo {
 
     // Retorna uma cópia que não permite adicionar ou remover autores.
     public List<String> getAutores() {
-        return List.copyOf(autores);
+        return List.copyOf(autores);    
     }
 
     public void setAutores(List<String> autores) {
@@ -130,4 +140,42 @@ public class Artigo {
 
         return new ArrayList<>(itens);
     }
+    
+    // Associa ou substitui a anotação do artigo.
+    public void definirAnotacao(Anotacao anotacao) {
+        this.anotacao = anotacao;
+    }
+
+    // Remove a associação com a anotação.
+    public void removerAnotacao() {
+        this.anotacao = null;
+    }
+
+    // Adiciona uma tag sem permitir IDs repetidos.
+    public boolean adicionarTag(Tag tag) {
+        if (tag == null || tag.getId() <= 0) {
+            throw new IllegalArgumentException(
+                    "A tag deve estar cadastrada."
+            );
+        }
+
+        for (Tag existente : tags) {
+            if (existente.getId() == tag.getId()) {
+                return false;
+            }
+        }
+
+        return tags.add(tag);
+    }
+
+    // Remove uma tag pelo ID.
+    public boolean removerTag(int idTag) {
+        return tags.removeIf(tag -> tag.getId() == idTag);
+    }
+
+    // Retorna uma cópia não modificável da lista.
+    public List<Tag> getTags() {
+        return List.copyOf(tags);
+    }
+    
 }

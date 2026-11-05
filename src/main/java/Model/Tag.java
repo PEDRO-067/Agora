@@ -10,6 +10,7 @@ import lombok.Setter;
 /**
  * Representa uma tag usada para classificar artigos.
  */
+
 @Getter
 @Setter
 public class Tag {
