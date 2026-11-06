@@ -26,20 +26,22 @@ public class Anotacao {
     private String texto;
     private LocalDate dataCriacao;
     private LocalDate dataEdicao;
+    private int artigoId;
 
     // A anotação a partir dos dados registrados no banco pode ser instanciada 
     // usando o contrutor com todos os argumentos do lombok. 
 
     // Cria uma anotação com nome e texto, usando a data atual.
-    public Anotacao(String nome, String texto) {
+    public Anotacao(String nome, String texto, int artigoId) {
         this.nome = nome.trim();
-        setTexto(texto.trim());
+        setTexto(texto);
         this.dataCriacao = LocalDate.now();
+        setArtigoId(artigoId);
     }
 
     //Altera o texto e registra a data da edição.
     public void editarTexto(String novoTexto) {
-        setTexto(novoTexto.trim());
+        setTexto(novoTexto);
         this.dataEdicao = LocalDate.now();
     }
 
@@ -51,8 +53,17 @@ public class Anotacao {
             );
         }
         
-        this.texto = texto;
+        this.texto = texto.trim();
     }
     
+    private void setArtigoId(int id) {
+        if (id <= 0) {
+            throw new IllegalArgumentException(
+                "O ID do artigo deve existir e ser válido."
+            );
+        }
+        
+        this.artigoId = id;
+    }
 }
 

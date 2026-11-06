@@ -21,7 +21,7 @@ public class ConexaoBD {
     }
     
     public static Connection getConexao() throws SQLException {
-        String url = Configuracao.get("db.url", "jdbc:postgresql://localhost:5432/");
+        String url = Configuracao.get("db.url", "jdbc:postgresql://localhost:5432/agora");
         String usuario = Configuracao.get("db.user", "postgres");
         String senha = Configuracao.get("db.password", "postgres");
         return DriverManager.getConnection(url, usuario, senha);

@@ -10,7 +10,7 @@ import java.net.http.HttpTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
-import java.util.Objects;
+import java.util.Locale;
 
 /*
  * Faz a comunicação HTTP com o Crossref para obter metadados JSON ou uma
@@ -115,7 +115,7 @@ public class CrossrefService {
 
     // Normaliza o DOI informado pelo usuário.
     // Aceita o identificador puro ou alguns prefixos de DOI normalmente copiados pelo usuário
-    private String normalizarDoi(String doi) {
+    public String normalizarDoi(String doi) {
         // Identifica doi nulo ou vazio
         if (doi == null || doi.isBlank()) {
             throw new IllegalArgumentException("O DOI deve ser informado.");
@@ -136,7 +136,7 @@ public class CrossrefService {
         if (resultado.isBlank()) {
             throw new IllegalArgumentException("O DOI deve ser informado.");
         }
-        return resultado;
+        return resultado.toLowerCase(Locale.ROOT);
     }
     
 }

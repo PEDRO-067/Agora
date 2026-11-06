@@ -7,35 +7,45 @@ package Controller;
 import DAO.AnotacaoDAO;
 import Model.Anotacao;
 import java.sql.SQLException;
-import java.time.LocalDate;
+import java.util.Optional;
 
 /**
  * @author pedro
  */
 public class AnotacaoCtrl {
     
-    private AnotacaoDAO anotacaoDAO;
-
-    public AnotacaoCtrl() {
-        this.anotacaoDAO = new AnotacaoDAO();
-    }
+    private final AnotacaoDAO anotacaoDAO = new AnotacaoDAO();
     
-    public void cadastrarAnotacao(String nome, String texto) throws SQLException {
-        Anotacao anotacao = new Anotacao(nome, texto);
-        anotacaoDAO.cadastrarAnotacao(anotacao);
-    }
-    
-    public void editarAnotacao(Anotacao anotacao, String texto) throws SQLException {
-        anotacao.editarTexto(texto);
-        anotacaoDAO.atualizarAnotacao(anotacao);
-    }
-    
-    public void excluirAnotacao(Anotacao anotacao) throws SQLException {
-        int idAnotacao = anotacao.getId();
-        anotacaoDAO.excluirAnotacao(idAnotacao);
-    }
-    
-    public void lerAnotacao() throws SQLException {
+    public Anotacao cadastrarAnotacao(String nome, String texto, int idArtigo) throws SQLException {
+        Optional<Anotacao> existente = anotacaoDAO.buscarPorArtigo(idArtigo);
+        if (existente.isPresent()) {
+            return existente.get();
+        }
         
+        Anotacao anotacao = new Anotacao(nome, texto, idArtigo);
+        int id = anotacaoDAO.inserir(anotacao);
+        anotacao.setId(id);
+        
+        return anotacao;
+    }
+    
+    public boolean alterarAnotacao(int id, String novoTexto) throws SQLException {
+        Optional<Anotacao> existente = anotacaoDAO.buscarPorId(id);
+        if(!existente.isPresent()) {
+            return false;
+        }
+        
+        Anotacao anotacao = existente.get();
+        anotacao.editarTexto(novoTexto);
+        
+        return anotacaoDAO.atualizar(anotacao);
+    }
+    
+    public boolean excluirAnotacao(int id) throws SQLException {
+        return anotacaoDAO.excluir(id);
+    }
+    
+    public Optional<Anotacao> buscarPorId(int id) throws SQLException {
+        return anotacaoDAO.buscarPorId(id);
     }
 }
