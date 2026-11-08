@@ -73,14 +73,15 @@ public class AnotacaoDAO {
     }
     
     public boolean atualizar(Anotacao anotacao) throws SQLException {
-        String sql = "UPDATE anotacao SET texto = ?, dataEdicao = ? WHERE id = ?";
+        String sql = "UPDATE anotacao SET texto = ?, dataEdicao = ?, nome = ? WHERE id = ?";
         
         try(Connection conexao = ConexaoBD.getConexao();
             PreparedStatement comando = conexao.prepareStatement(sql)) {
             
             comando.setString(1, anotacao.getTexto());
             comando.setObject(2, anotacao.getDataEdicao());
-            comando.setInt(3, anotacao.getId());
+            comando.setString(3, anotacao.getNome());
+            comando.setInt(4, anotacao.getId());
             return comando.executeUpdate() == 1;
         }
     }
@@ -88,13 +89,13 @@ public class AnotacaoDAO {
     private Anotacao lerAnotacao(ResultSet resultado) throws SQLException {
         LocalDate dataEdicao;
         
-        if(resultado.getDate("dataCriacao") == null) {
+        if(resultado.getDate("dataEdicao") == null) {
             dataEdicao = null;
         } else {
-            dataEdicao = resultado.getDate("dataCriacao").toLocalDate();
+            dataEdicao = resultado.getDate("dataEdicao").toLocalDate();
         }
         
-        return new Anotacao(resultado.getInt("id"), resultado.getString("nome"), resultado.getString("texto"), resultado.getDate("dataCriacao").toLocalDate(), dataEdicao, resultado.getInt("artigo_id"));
+        return new Anotacao(resultado.getInt("id"), resultado.getString("nome"), resultado.getString("texto"), resultado.getDate("dataCriacao").toLocalDate(), dataEdicao, resultado.getInt("id_artigo"));
     } 
     
     public boolean excluir(int idAnotacao) throws SQLException {

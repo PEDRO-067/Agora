@@ -1,40 +1,66 @@
 package View;
 
-import javafx.geometry.Insets;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import Model.Pasta;
+import Model.Tag;
+import java.util.List;
+import javafx.geometry.Insets;
+import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
+import javafx.util.StringConverter;
 
+/** Filtros de organização e acesso ao gerenciamento de pastas e tags. */
 public class PainelMenuLateral extends VBox {
-    
-    public PainelMenuLateral() {
-        this.setBackground(TemaUI.getFundo(TemaUI.COR_FUNDO_PAINEL));
-        this.setPadding(new Insets(20));
-        this.setSpacing(15);
-        this.setPrefWidth(250);
-        this.setStyle("-fx-border-color: #E5E7EB; -fx-border-width: 0 1 0 0;");
-        
-        Label lblNavegacao = new Label("NAVEGAÇÃO");
-        lblNavegacao.setFont(Font.font("Segoe UI", FontWeight.BOLD, 12));
-        lblNavegacao.setStyle("-fx-text-fill: " + TemaUI.COR_TEXTO_SECUNDARIO + ";");
-        
-        Label btnTodos = new Label("Todos os Artigos");
-        btnTodos.setFont(Font.font("Segoe UI", 14));
-        btnTodos.setStyle("-fx-text-fill: " + TemaUI.COR_TEXTO + "; -fx-cursor: hand;");
-        
-        Label lblPastas = new Label("PASTAS");
-        lblPastas.setFont(Font.font("Segoe UI", FontWeight.BOLD, 12));
-        lblPastas.setStyle("-fx-text-fill: " + TemaUI.COR_TEXTO_SECUNDARIO + ";");
-        VBox.setMargin(lblPastas, new Insets(20, 0, 0, 0));
-        
-        ListView<String> listaPastas = new ListView<>();
-        // Mock de pastas, futuramente integrado com Model.Pasta e PastaController
-        listaPastas.getItems().addAll("Conferência IEEE", "TCC", "Referências POO");
-        listaPastas.setStyle("-fx-background-insets: 0; -fx-padding: 0; -fx-background-color: transparent;");
-        
-        this.getChildren().addAll(lblNavegacao, btnTodos, lblPastas, listaPastas);
+    private final ComboBox<Pasta> pastas = new ComboBox<>();
+    private final ComboBox<Tag> tags = new ComboBox<>();
+
+    public PainelMenuLateral(Runnable filtrar, Runnable gerenciarPastas, Runnable gerenciarTags) {
+        setPadding(new Insets(22));
+        setSpacing(14);
+        setPrefWidth(250);
+        setStyle("-fx-background-color: #E8EEF5;");
+        pastas.setMaxWidth(Double.MAX_VALUE);
+        tags.setMaxWidth(Double.MAX_VALUE);
+        pastas.setConverter(new StringConverter<>() {
+            public String toString(Pasta pasta) { return pasta == null ? "Todas as pastas" : pasta.getNome(); }
+            public Pasta fromString(String texto) { throw new UnsupportedOperationException(); }
+        });
+        tags.setConverter(new StringConverter<>() {
+            public String toString(Tag tag) { return tag == null ? "Todas as tags" : tag.getNome(); }
+            public Tag fromString(String texto) { throw new UnsupportedOperationException(); }
+        });
+        pastas.setPromptText("Todas as pastas");
+        tags.setPromptText("Todas as tags");
+        Button aplicar = new Button("Aplicar filtros");
+        aplicar.setOnAction(evento -> filtrar.run());
+        Button limpar = new Button("Todas as pastas e tags");
+        limpar.setOnAction(evento -> {
+            pastas.setValue(null);
+            tags.setValue(null);
+            filtrar.run();
+        });
+        Button editarPastas = new Button("Gerenciar pastas");
+        editarPastas.setOnAction(evento -> gerenciarPastas.run());
+        Button editarTags = new Button("Gerenciar tags");
+        editarTags.setOnAction(evento -> gerenciarTags.run());
+        getChildren().addAll(new Label("ORGANIZAR"), new Label("Pasta"), pastas,
+                new Label("Tag"), tags, aplicar, limpar, new Separator(), editarPastas, editarTags);
+    }
+
+    public int getIdPasta() { return pastas.getValue() == null ? 0 : pastas.getValue().getId(); }
+    public int getIdTag() { return tags.getValue() == null ? 0 : tags.getValue().getId(); }
+
+    public void atualizar(List<Pasta> novasPastas, List<Tag> novasTags) {
+        int pastaId = getIdPasta();
+        int tagId = getIdTag();
+        pastas.getItems().setAll(novasPastas);
+        tags.getItems().setAll(novasTags);
+        pastas.setValue(null);
+        tags.setValue(null);
+        for (Pasta pasta : novasPastas) {
+            if (pasta.getId() == pastaId) pastas.setValue(pasta);
+        }
+        for (Tag tag : novasTags) {
+            if (tag.getId() == tagId) tags.setValue(tag);
+        }
     }
 }

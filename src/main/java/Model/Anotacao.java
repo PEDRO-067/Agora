@@ -20,7 +20,6 @@ public class Anotacao {
     @Setter
     private int id;
     
-    @Setter
     private String nome;
     
     private String texto;
@@ -33,7 +32,7 @@ public class Anotacao {
 
     // Cria uma anotação com nome e texto, usando a data atual.
     public Anotacao(String nome, String texto, int artigoId) {
-        this.nome = nome.trim();
+        setNome(nome);
         setTexto(texto);
         this.dataCriacao = LocalDate.now();
         setArtigoId(artigoId);
@@ -43,6 +42,14 @@ public class Anotacao {
     public void editarTexto(String novoTexto) {
         setTexto(novoTexto);
         this.dataEdicao = LocalDate.now();
+    }
+
+    /** Define um nome válido para a anotação. */
+    public void setNome(String nome) {
+        if (nome == null || nome.isBlank()) {
+            throw new IllegalArgumentException("O nome da anotação deve ser informado.");
+        }
+        this.nome = nome.trim();
     }
 
     // Valida o texto e atribui valor a texto.
@@ -66,4 +73,3 @@ public class Anotacao {
         this.artigoId = id;
     }
 }
-

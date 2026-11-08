@@ -24,7 +24,12 @@ public class ConexaoBD {
         String url = Configuracao.get("db.url", "jdbc:postgresql://localhost:5432/agora");
         String usuario = Configuracao.get("db.user", "postgres");
         String senha = Configuracao.get("db.password", "postgres");
-        return DriverManager.getConnection(url, usuario, senha);
+        java.util.Properties propriedades = new java.util.Properties();
+        propriedades.setProperty("user", usuario);
+        propriedades.setProperty("password", senha);
+        propriedades.setProperty("connectTimeout", "10");
+        propriedades.setProperty("socketTimeout", "30");
+        return DriverManager.getConnection(url, propriedades);
     }
     
 }

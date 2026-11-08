@@ -78,7 +78,7 @@ public class ArtigoDAO {
     }
 
     public Optional<Artigo> buscarPorDoi(String doi) throws SQLException {
-        String sql = "SELECT * FROM artigo WHERE doi = ?";
+        String sql = "SELECT * FROM artigo WHERE lower(doi) = lower(?)";
 
         try (Connection conexao = ConexaoBD.getConexao();
              PreparedStatement comando = conexao.prepareStatement(sql)) {
@@ -119,6 +119,37 @@ public class ArtigoDAO {
             comando.setInt(2, id);
             return comando.executeUpdate() == 1;
         }
+    }
+
+    /** Combina filtros opcionais. Zero representa todas as pastas/tags. */
+    public List<Artigo> pesquisar(String titulo, Integer ano, int idPasta, int idTag) throws SQLException {
+        String sql = """
+            SELECT a.* FROM artigo a
+            WHERE strpos(lower(coalesce(a.titulo, '')), lower(?)) > 0
+              AND (? = 0 OR a.ano = ?)
+              AND (? = 0 OR EXISTS (
+                  SELECT 1 FROM pasta_artigo p WHERE p.id_artigo = a.id AND p.id_pasta = ?))
+              AND (? = 0 OR EXISTS (
+                  SELECT 1 FROM artigo_tag t WHERE t.id_artigo = a.id AND t.id_tag = ?))
+            ORDER BY a.titulo, a.id
+            """;
+        List<Artigo> artigos = new ArrayList<>();
+        try (Connection conexao = ConexaoBD.getConexao();
+             PreparedStatement comando = conexao.prepareStatement(sql)) {
+            comando.setString(1, titulo);
+            comando.setInt(2, ano == null ? 0 : ano);
+            comando.setInt(3, ano == null ? 0 : ano);
+            comando.setInt(4, idPasta);
+            comando.setInt(5, idPasta);
+            comando.setInt(6, idTag);
+            comando.setInt(7, idTag);
+            try (ResultSet resultado = comando.executeQuery()) {
+                while (resultado.next()) {
+                    artigos.add(lerArtigo(resultado));
+                }
+            }
+        }
+        return artigos;
     }
 
     public boolean excluir(int id) throws SQLException {

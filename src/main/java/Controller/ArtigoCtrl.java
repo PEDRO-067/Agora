@@ -5,6 +5,9 @@
 package Controller;
 
 import DAO.ArtigoDAO;
+import DAO.AnotacaoDAO;
+import DAO.TagDAO;
+import Model.Tag;
 import Model.Artigo;
 import Service.CrossrefParser;
 import Service.CrossrefService;
@@ -40,7 +43,19 @@ public class ArtigoCtrl {
         }
 
         artigo.setDoi(doi);
-        int id = artigoDAO.inserir(artigo);
+        int id;
+        try {
+            id = artigoDAO.inserir(artigo);
+        } catch (SQLException erro) {
+            // Outra tentativa pode ter cadastrado o DOI durante a consulta HTTP.
+            if ("23505".equals(erro.getSQLState())) {
+                Optional<Artigo> duplicado = artigoDAO.buscarPorDoi(doi);
+                if (duplicado.isPresent()) {
+                    return duplicado.get();
+                }
+            }
+            throw erro;
+        }
         artigo.setId(id);
 
         return artigo;
@@ -68,5 +83,39 @@ public class ArtigoCtrl {
 
     public boolean excluir(int id) throws SQLException {
         return artigoDAO.excluir(id);
+    }
+
+    /** Carrega os relacionamentos somente ao abrir os detalhes. */
+    public Artigo buscarDetalhes(int id) throws SQLException {
+        Artigo artigo = artigoDAO.buscarPorId(id)
+                .orElseThrow(() -> new IllegalArgumentException("Artigo não encontrado."));
+        artigo.definirAnotacao(new AnotacaoDAO().buscarPorArtigo(id).orElse(null));
+        for (Tag tag : new TagDAO().listarPorArtigo(id)) {
+            artigo.adicionarTag(tag);
+        }
+        return artigo;
+    }
+
+    /** Pesquisa na biblioteca local por título, ano, pasta e tag. */
+    public List<Artigo> pesquisar(String titulo, String ano, int idPasta, int idTag) throws SQLException {
+        Integer anoNumero = null;
+        if (ano != null && !ano.isBlank()) {
+            try {
+                anoNumero = Integer.valueOf(ano.trim());
+            } catch (NumberFormatException erro) {
+                throw new IllegalArgumentException("Informe um ano inteiro positivo.");
+            }
+            if (anoNumero <= 0) {
+                throw new IllegalArgumentException("Informe um ano inteiro positivo.");
+            }
+        }
+        return artigoDAO.pesquisar(titulo == null ? "" : titulo.trim(), anoNumero, idPasta, idTag);
+    }
+
+    /** Obtém BibTeX para um artigo cadastrado. */
+    public String gerarBibtex(int id) throws SQLException, IOException, InterruptedException {
+        Artigo artigo = artigoDAO.buscarPorId(id)
+                .orElseThrow(() -> new IllegalArgumentException("Artigo não encontrado."));
+        return crossrefService.buscarBibtexPorDoi(artigo.getDoi());
     }
 }

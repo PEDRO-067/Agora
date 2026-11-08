@@ -1,46 +1,46 @@
 package View;
 
+import Controller.ArtigoCtrl;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
+/** Importa os metadados e persiste o artigo pelo DOI informado. */
 public class ModalCadastroArtigo {
-    
-    public void exibir() {
+    private final Runnable atualizar;
+
+    public ModalCadastroArtigo(Runnable atualizar) { this.atualizar = atualizar; }
+
+    public void exibir(Window dono) {
         Stage janela = new Stage();
-        janela.initModality(Modality.APPLICATION_MODAL);
-        janela.setTitle("Cadastrar Artigo via DOI");
-        janela.setMinWidth(400);
-        
-        VBox layout = new VBox(15);
-        layout.setPadding(new Insets(20));
-        layout.setAlignment(Pos.CENTER);
-        
-        Label lblInstrucao = new Label("Insira o DOI do artigo:");
-        lblInstrucao.setFont(Font.font("Segoe UI", FontWeight.BOLD, 14));
-        
-        TextField txtDoi = new TextField();
-        txtDoi.setPromptText("Ex: 10.1109/TSE.2023.1234567");
-        
-        Button btnBuscar = new Button("Buscar e Cadastrar (Crossref)");
-        btnBuscar.setStyle("-fx-background-color: " + TemaUI.COR_PRIMARIA + "; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;");
-        btnBuscar.setOnAction(e -> {
-            System.out.println("Integração com Crossref pendente para o DOI: " + txtDoi.getText());
-            janela.close();
+        janela.initOwner(dono);
+        janela.initModality(Modality.WINDOW_MODAL);
+        janela.setTitle("Cadastrar artigo");
+        TextField doi = new TextField();
+        doi.setPromptText("DOI ou link https://doi.org/…");
+        Label mensagem = new Label("Informe o DOI para consultar os metadados no Crossref.");
+        mensagem.setWrapText(true);
+        Button cadastrar = new Button("Buscar e cadastrar");
+        VBox painel = new VBox(15, mensagem, doi, cadastrar);
+        painel.setPadding(new Insets(24));
+        painel.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-size: 13;");
+        janela.setOnCloseRequest(evento -> {
+            if (painel.isDisabled()) evento.consume();
         });
-        
-        layout.getChildren().addAll(lblInstrucao, txtDoi, btnBuscar);
-        
-        Scene cena = new Scene(layout);
-        janela.setScene(cena);
-        janela.showAndWait();
+        cadastrar.setOnAction(evento -> {
+            String entrada = doi.getText();
+            OperacaoUI.executar(painel, () -> new ArtigoCtrl().cadastrarPorDoi(entrada), artigo -> {
+                janela.close();
+                atualizar.run();
+                new ModalDetalhesArtigo(artigo.getId(), atualizar).exibir(dono);
+            });
+        });
+        doi.setOnAction(evento -> cadastrar.fire());
+        janela.setScene(new Scene(painel, 470, 185));
+        janela.show();
     }
 }

@@ -20,7 +20,7 @@ public final class Configuracao {
     }
 
     public static String get(String chave, String valorPadrao) {
-        String valor = PROPRIEDADES.getProperty(chave);
+        String valor = System.getProperty(chave, PROPRIEDADES.getProperty(chave));
         if (valor == null || valor.trim().isEmpty()) {
             return valorPadrao;
         }
