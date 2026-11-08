@@ -86,27 +86,6 @@ anotação por artigo. O texto do levantamento usa o plural genericamente. Cada
 artigo pode estar em várias pastas e ter várias tags, compartilhadas com outros
 artigos. O banco garante as relações com chaves estrangeiras e vínculos únicos.
 
-## Testes de integração
-
-O teste executável usa o PostgreSQL configurado e cria um esquema temporário
-exclusivo. Ao terminar, remove apenas esse esquema. O usuário do banco precisa
-ter permissão de criação de esquema. A biblioteca existente é preservada.
-
-Execute na raiz do projeto, em PowerShell, com java e Maven configurados.
-
-    mvn test-compile dependency:build-classpath "-Dmdep.outputFile=target/classpath.txt"
-    $testClasspath = 'target/test-classes;target/classes;' + (Get-Content target/classpath.txt -Raw).Trim()
-    java -cp $testClasspath IntegracaoTest
-    java -cp $testClasspath IntegracaoTest --api
-
-A opção --api acrescenta cadastro real no Crossref e obtenção de BibTeX.
-O teste verifica validações, persistência, anotação ainda sem data de edição,
-duplicidades, busca combinada, relacionamentos e exclusões em cascata.
-O comando mvn test isoladamente não executa esse teste manual.
-
-A classe Configuracao também aceita propriedades Java -Ddb.url, -Ddb.user e
--Ddb.password. O teste usa esse recurso para selecionar o esquema temporário.
-
 ## Organização da implementação
 
 - Model mantém as regras dos objetos. Anotacao valida nome, texto e artigoId.
