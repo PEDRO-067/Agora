@@ -5,6 +5,12 @@
 package DAO;
 
 import Model.Anotacao;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.Optional;
 
 /**
  *
@@ -12,17 +18,95 @@ import Model.Anotacao;
  */
 public class AnotacaoDAO {
     
-    public void cadastrarAnotacao(Anotacao anotacao) {
-        String SQL = "INSERT INTO anotacao (nome, texto) VALUES (?, ?)";
+    public int inserir(Anotacao anotacao) throws SQLException {
+        String sql = "INSERT INTO anotacao (nome, id_artigo, texto, dataCriacao, dataEdicao) VALUES (?, ?, ?, ?, ?) RETURNING id";
         
+        try(Connection conexao = ConexaoBD.getConexao();
+            PreparedStatement comando = conexao.prepareStatement(sql)) {
+           
+            comando.setString(1, anotacao.getNome());
+            comando.setInt(2, anotacao.getArtigoId());
+            comando.setString(3, anotacao.getTexto());
+            comando.setObject(4, anotacao.getDataCriacao());
+            comando.setObject(5, anotacao.getDataEdicao());
+           
+            try (ResultSet resultado = comando.executeQuery()) {
+                if(resultado.next()) {
+                    return resultado.getInt("id");
+                }
+                throw new SQLException("O banco não retornou o ID da anotação");
+            }
+        } 
     }
     
-    public void atualizarAnotacao(Anotacao anotacao) {
-        String SQL = "UPDATE anotacao SET nome = ?, texto = ? WHERE id = ?";
+    public Optional<Anotacao> buscarPorArtigo(int idArtigo) throws SQLException {
+        String sql = "SELECT * FROM anotacao WHERE id_artigo = ?";
+        
+        try (Connection conexao = ConexaoBD.getConexao();
+             PreparedStatement comando = conexao.prepareStatement(sql)) {
+            
+            comando.setInt(1, idArtigo);
+            
+            try(ResultSet resultado = comando.executeQuery()) {
+                if(resultado.next()) {
+                    return Optional.of(lerAnotacao(resultado));
+                }
+                return Optional.empty();
+            }
+        }
     }
     
-    public void excluirAnotacao(int id) {
-        String SQL = "DELETE FROM anotacao WHERE id = ?";
+    public Optional<Anotacao> buscarPorId(int id) throws SQLException {
+        String sql = "SELECT * FROM anotacao WHERE id = ?";
+
+        try (Connection conexao = ConexaoBD.getConexao(); PreparedStatement comando = conexao.prepareStatement(sql)) {
+
+            comando.setInt(1, id);
+
+            try (ResultSet resultado = comando.executeQuery()) {
+                if (resultado.next()) {
+                    return Optional.of(lerAnotacao(resultado));
+                }
+                return Optional.empty();
+            }
+        }
+    }
+    
+    public boolean atualizar(Anotacao anotacao) throws SQLException {
+        String sql = "UPDATE anotacao SET texto = ?, dataEdicao = ?, nome = ? WHERE id = ?";
+        
+        try(Connection conexao = ConexaoBD.getConexao();
+            PreparedStatement comando = conexao.prepareStatement(sql)) {
+            
+            comando.setString(1, anotacao.getTexto());
+            comando.setObject(2, anotacao.getDataEdicao());
+            comando.setString(3, anotacao.getNome());
+            comando.setInt(4, anotacao.getId());
+            return comando.executeUpdate() == 1;
+        }
+    }
+    
+    private Anotacao lerAnotacao(ResultSet resultado) throws SQLException {
+        LocalDate dataEdicao;
+        
+        if(resultado.getDate("dataEdicao") == null) {
+            dataEdicao = null;
+        } else {
+            dataEdicao = resultado.getDate("dataEdicao").toLocalDate();
+        }
+        
+        return new Anotacao(resultado.getInt("id"), resultado.getString("nome"), resultado.getString("texto"), resultado.getDate("dataCriacao").toLocalDate(), dataEdicao, resultado.getInt("id_artigo"));
+    } 
+    
+    public boolean excluir(int idAnotacao) throws SQLException {
+        String sql = "DELETE FROM anotacao WHERE id = ?";
+        
+        try(Connection conexao = ConexaoBD.getConexao();
+            PreparedStatement comando = conexao.prepareStatement(sql)) {
+                
+            comando.setInt(1, idAnotacao);
+            return comando.executeUpdate() == 1;
+        }
     }
     
 }

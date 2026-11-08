@@ -5,60 +5,71 @@
 package Model;
 
 import java.time.LocalDate;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.AllArgsConstructor;
 
 /**
- *
- * 
+ * Representa uma anotação associada a um artigo.
  */
+
+@Getter
+@AllArgsConstructor
 public class Anotacao {
+    
+    @Setter
     private int id;
+    
     private String nome;
+    
     private String texto;
     private LocalDate dataCriacao;
     private LocalDate dataEdicao;
+    private int artigoId;
 
-    public Anotacao(){
+    // A anotação a partir dos dados registrados no banco pode ser instanciada 
+    // usando o contrutor com todos os argumentos do lombok. 
+
+    // Cria uma anotação com nome e texto, usando a data atual.
+    public Anotacao(String nome, String texto, int artigoId) {
+        setNome(nome);
+        setTexto(texto);
+        this.dataCriacao = LocalDate.now();
+        setArtigoId(artigoId);
+    }
+
+    //Altera o texto e registra a data da edição.
+    public void editarTexto(String novoTexto) {
+        setTexto(novoTexto);
+        this.dataEdicao = LocalDate.now();
+    }
+
+    /** Define um nome válido para a anotação. */
+    public void setNome(String nome) {
+        if (nome == null || nome.isBlank()) {
+            throw new IllegalArgumentException("O nome da anotação deve ser informado.");
+        }
+        this.nome = nome.trim();
+    }
+
+    // Valida o texto e atribui valor a texto.
+    private void setTexto(String texto) {
+        if (texto == null || texto.isBlank()) {
+            throw new IllegalArgumentException(
+                "O texto da anotação não pode estar vazio."
+            );
+        }
         
+        this.texto = texto.trim();
     }
     
-    public Anotacao(String texto, LocalDate dataCriacao) {
-        this.texto = texto;
-        this.dataCriacao = dataCriacao;
+    private void setArtigoId(int id) {
+        if (id <= 0) {
+            throw new IllegalArgumentException(
+                "O ID do artigo deve existir e ser válido."
+            );
+        }
+        
+        this.artigoId = id;
     }
-    
-    
-    
-    public int getId() {
-        return id;
-    }
-
-    public String getTexto() {
-        return texto;
-    }
-
-    public LocalDate getDataCriacao() {
-        return dataCriacao;
-    }
-
-    public LocalDate getDaataEdicao() {
-        return dataEdicao;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setTexto(String texto) {
-        this.texto = texto;
-    }
-
-    public void setDataCriacao(LocalDate dataCriacao) {
-        this.dataCriacao = dataCriacao;
-    }
-
-    public void setDataEdicao(LocalDate dataEdicao) {
-        this.dataEdicao = dataEdicao;
-    }
-   
 }
-
